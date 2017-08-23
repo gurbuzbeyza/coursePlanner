@@ -177,8 +177,9 @@ def update():
 			newSoup = bs4.BeautifulSoup(urlopen('http://registration.boun.edu.tr' + matchobj.group(1) + term + '&' + matchobj.group(2)), "html.parser")
 			lesson = newSoup.select('td')
 			lesson = lesson[36:]
-			for x in xrange(0,len(lesson),1):
+			for x in xrange(0,len(lesson),13):
 				name = lesson[x].getText().replace(" ","").strip()
+				print name
 				days = lesson[x+7].getText().strip()
 				slots = lesson[x+8].getText().strip()
 				openFile.write(str(lesson[x]))
