@@ -180,8 +180,9 @@ def update():
 			for x in xrange(0,len(lesson),13):
 				name = lesson[x].getText().replace(" ","").strip()
 				print name
-				days = lesson[x+7].getText().strip()
-				slots = lesson[x+8].getText().strip()
+				days = lesson[x+6].getText().strip()
+				slots = lesson[x+7].getText().strip()
+				print slots
 				openFile.write(str(lesson[x]))
 				openFile.write(str(lesson[x+7]))
 				openFile.write(str(lesson[x+8]))
