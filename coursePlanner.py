@@ -1,10 +1,16 @@
 #!/usr/bin/env python
-import requests, bs4, re, sys, os.path
+import requests, bs4, re, sys, os.path, time
 from PyQt5.QtCore import *
 from PyQt5.QtGui import * 
 from PyQt5.QtWidgets import *
 from urllib2 import urlopen
 class MyTable(QDialog):
+	#static variables
+	addCourseText = "Add Course"
+	removeCourseText = "Remove Course"
+	updateButtonText = "Update"
+	updateProgressText = "Update in progress ..."
+
 	def __init__(self, parent = None):
 		super(MyTable, self).__init__(parent)
 		self.mainlayout = QVBoxLayout()
@@ -17,7 +23,8 @@ class MyTable(QDialog):
 		verHeaders = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 		self.table.setHorizontalHeaderLabels(horHeaders)
 		self.table.setVerticalHeaderLabels(verHeaders)
-		self.addLine = QLineEdit('Add Course')
+		self.addLine = QLineEdit()
+		self.addLine.setPlaceholderText(self.addCourseText)
 		self.deps = QComboBox()
 		self.conums = QComboBox()
 		self.secs = QComboBox()
@@ -26,10 +33,11 @@ class MyTable(QDialog):
 		self.addlo.addWidget(self.deps)
 		self.addlo.addWidget(self.conums)
 		self.addlo.addWidget(self.secs)
-		self.removeLine = QLineEdit('Remove Course')
-		self.addButton = QPushButton('Add Course')
-		self.removeButton = QPushButton('Remove Course')
-		self.update = QPushButton('Update')
+		self.removeLine = QLineEdit()
+		self.removeLine.setPlaceholderText(self.removeCourseText)
+		self.addButton = QPushButton(self.addCourseText)
+		self.removeButton = QPushButton(self.removeCourseText)
+		self.update = QPushButton(self.updateButtonText)
 		self.label = QLabel()
 		self.mainlayout.addWidget(self.table)
 		self.layout.addWidget(self.addButton, 0, 0)
@@ -55,6 +63,7 @@ class MyTable(QDialog):
 			if course == i.name:
 				self.parse(i)
 				break
+		self.addLine.clear()
 	def removeClick(self):
 		course = str(self.removeLine.text()).strip()
 		for x in xrange(0,5):
@@ -73,7 +82,7 @@ class MyTable(QDialog):
 		self.table.resizeColumnsToContents()
 		self.table.resizeRowsToContents()  
 		self.table.setFixedSize(self.table.horizontalHeader().length()+100, self.table.verticalHeader().length()+30)
-		return
+		self.removeLine.clear()
 
 	def parse(self, less):
 		days = []
@@ -118,7 +127,7 @@ class MyTable(QDialog):
 	
 	def updateClick(self):
 		global departments
-		self.label.setText('Please wait for update to finish!')
+		self.label.setText(self.updateProgressText)
 		self.mainlayout.addWidget(self.label)
 		self.repaint()
 		qApp.processEvents()
@@ -187,18 +196,38 @@ def update():
 				allLessons.append(Lesson(name, days, slots))
 
 	openFile.close()
+	
+	
 	return
 
+app = QApplication(sys.argv)
 allLessons = []
 
 if not os.path.isfile('courses.html'):
+	#start splash
+	splash_pix = QPixmap('./img/downloading.png')
+	splash = QSplashScreen(splash_pix)
+	splash.show()
+	app.processEvents()
+
 	update()
+
+	#end splash
+	splash.close()
 	
 else:
+	splash_pix = QPixmap('./img/loading.png')
+	splash = QSplashScreen(splash_pix)
+	splash.show()
+	app.processEvents()
+
 	soup = bs4.BeautifulSoup(open("courses.html"), "html.parser")
 	selected = soup.select('td')
 	for x in xrange(0,len(selected),3):
 		allLessons.append(Lesson(selected[x].getText().replace(" ","").strip(), selected[x+1].getText().strip(), selected[x+2].getText().strip()))
+
+	time.sleep(3)
+	splash.close()
 
 departments = []
 		
@@ -211,7 +240,8 @@ for x in allLessons:
 		if matchobj.group(1) not in departments:
 			departments.append(matchobj.group(1))
 
-app = QApplication(sys.argv)
+
+
 dialog = MyTable()
 dialog.show()
 sys.exit(app.exec_())
