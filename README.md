@@ -2,7 +2,11 @@
 Course planner for BOUN students
 
 # RunScript
-Use the script named: run.sh to install dependencies and run the program 
+Use the script named **install.sh** to install dependencies.
+
+`$ ./install.sh`
+
+Use the script named **run.sh** to run the program 
 automatically.
 
 `$ ./run.sh`
