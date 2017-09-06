@@ -3,7 +3,7 @@ import requests, bs4, re, sys, os.path, time
 from PyQt5.QtCore import *
 from PyQt5.QtGui import * 
 from PyQt5.QtWidgets import *
-from urllib2 import urlopen
+from urllib.request import urlopen
 class MyTable(QDialog):
 	#static variables
 	addCourseText = "Add Course"
@@ -66,8 +66,8 @@ class MyTable(QDialog):
 		self.addLine.clear()
 	def removeClick(self):
 		course = str(self.removeLine.text()).strip()
-		for x in xrange(0,5):
-			for y in xrange(0,9):
+		for x in range(0,5):
+			for y in range(0,9):
 				if self.table.item(x,y) != None:
 					if self.table.item(x,y).text() == course:
 						newitem = QTableWidgetItem('')
@@ -186,7 +186,7 @@ def update():
 			newSoup = bs4.BeautifulSoup(urlopen('http://registration.boun.edu.tr' + matchobj.group(1) + term + '&' + matchobj.group(2)), "html.parser")
 			lesson = newSoup.select('td')
 			lesson = lesson[36:]
-			for x in xrange(0,len(lesson),13):
+			for x in range(0,len(lesson),13):
 				name = lesson[x].getText().replace(" ","").strip()
 				days = lesson[x+6].getText().strip()
 				slots = lesson[x+7].getText().strip()
@@ -223,7 +223,7 @@ else:
 
 	soup = bs4.BeautifulSoup(open("courses.html"), "html.parser")
 	selected = soup.select('td')
-	for x in xrange(0,len(selected),3):
+	for x in range(0,len(selected),3):
 		allLessons.append(Lesson(selected[x].getText().replace(" ","").strip(), selected[x+1].getText().strip(), selected[x+2].getText().strip()))
 
 	time.sleep(3)
